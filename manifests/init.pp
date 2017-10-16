@@ -34,7 +34,10 @@ class collectd (
   $write_threads           = $collectd::params::write_threads,
 ) inherits collectd::params {
 
-  $collectd_version_real = pick($::collectd_version, $minimum_version)
+  $collectd_version_real = versioncmp($minimum_version, pick($::collectd_version, '0')) ? {
+    1       => $minimum_version,
+    default => $::collectd_version,
+  }
 
   class { '::collectd::install':
     package_install_options => $package_install_options,
